@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Macro tracker prototype</title>
+<title>Macro tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   color-scheme:light dark;
@@ -19,12 +19,10 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#0E1114;--card:#171B20;--ink:#ECEFF3;--mute:#98A2AF;--line:#2A3138;--trk:#252B32;--danger:#FF8A80;
-    --k:#8B95A3;--p:#3FCBA8;--fat:#EBA43F;--c:#8AA2FF;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0E1114;--card:#171B20;--ink:#ECEFF3;--mute:#98A2AF;--line:#2A3138;--trk:#252B32;--danger:#FF8A80;
-  --k:#8B95A3;--p:#3FCBA8;--fat:#EBA43F;--c:#8AA2FF;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 html,body{margin:0;background:var(--bg);color:var(--ink)}
@@ -33,14 +31,16 @@ body{font-family:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
 input,select{font:inherit;color:inherit}
 .hd{display:flex;align-items:center;gap:6px;min-height:56px}
-.hd h1{flex:1;margin:0;font-size:19px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrow{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;min-height:52px;margin-bottom:10px}
+.hmid{display:flex;align-items:center;justify-content:center;gap:2px;min-width:0;overflow:hidden}
+.hmid .wd{font-size:15px;font-weight:500;color:var(--mute);margin:0 4px 0 2px;white-space:nowrap}
+.hd h1,.hrow h1{flex:1;margin:0;font-size:19px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ib{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;flex:none}
+.hrow .ib.sm{width:36px;height:44px}
+.hrow h1{text-align:center}
 .ib:active{background:var(--trk)}
 svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.seg{display:inline-flex;background:var(--trk);border-radius:10px;padding:3px;flex:none}
-.seg button{padding:6px 14px;border-radius:8px;font-size:14px;font-weight:500;color:var(--mute)}
-.seg button.on{background:var(--card);color:var(--ink)}
-.bars{background:var(--card);border-radius:16px;padding:6px 16px 12px;margin:2px 0 14px;display:block;cursor:pointer}
+.bars{background:var(--card);border-radius:16px;padding:6px 16px 12px;margin:0 0 14px;display:block;cursor:pointer}
 .bar{padding-top:10px}
 .bl{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--mute)}
 .bl .bv b{color:var(--ink);font-weight:500}.bl .bv b.hit{color:var(--p);font-weight:700}.bv .ovr{color:var(--over);font-weight:500}.bl .bv{white-space:nowrap}.bl .av{font-size:12px;color:var(--mute);margin-left:2px}.trk i.lo,.sg i.lo{opacity:.45}
@@ -56,15 +56,26 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .btn.dg{background:none;color:var(--danger);border:0.5px solid var(--danger)}
 .row.addrow{justify-content:flex-start;gap:8px;font-weight:500;min-height:54px}
 .srch{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:14px;padding:0 14px;height:52px;color:var(--mute)}
+button.srch{width:100%;cursor:text}
+button.srch span{color:var(--mute);font-size:17px}
+.hd .srch{flex:1;min-width:0;height:48px}
 .srch input{flex:1;min-width:0;height:100%;border:0;background:none;outline:0;font-size:17px;color:var(--ink)}
 .srch input::placeholder{color:var(--mute)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;min-height:58px;border-bottom:0.5px solid var(--line);padding:8px 4px}
 .row .nm{font-weight:500;font-size:17px}
-.row .rt{color:var(--mute);font-size:14px;flex:none}
+.row .rt{color:var(--mute);font-size:14px;flex:none;text-align:right}
 .tag{font-size:12px;font-weight:500;color:var(--mute);border:0.5px solid var(--line);border-radius:6px;padding:1px 7px;margin-left:8px;vertical-align:2px}
-.static{cursor:default;padding-top:10px;padding-bottom:10px}.row .ls{display:block;font-size:13px;color:var(--mute);margin-top:2px}.m-k{color:var(--k)}.m-p{color:var(--p)}.m-fat{color:var(--fat)}.m-c{color:var(--c)}
+.row .ls{display:block;font-size:13px;color:var(--mute);margin-top:2px}
+.m-k{color:var(--k)}.m-p{color:var(--p)}.m-fat{color:var(--fat)}.m-c{color:var(--c)}
+.ls .hl,.sb .hl{font-weight:700}
 .addbar{position:sticky;bottom:0;padding:10px 0 6px;background:linear-gradient(to top,var(--bg) 70%,transparent)}
 .addbar button{display:flex;align-items:center;gap:8px;width:100%;height:54px;padding:0 16px;border-radius:14px;background:var(--ink);color:var(--bg);font-weight:600;font-size:16px}
+.chips{display:flex;gap:8px;margin:4px 0 0;flex-wrap:wrap}
+.chip{padding:8px 14px;border-radius:999px;border:0.5px solid var(--line);background:var(--card);font-size:14px;font-weight:500;flex:none;white-space:nowrap}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sortrow{display:flex;gap:8px;align-items:center;margin:10px 0 0}
+select.sel{flex:1;min-width:0;height:44px;font-size:15px;padding:0 12px}
+.in.dsel{flex:none;width:120px;height:44px;text-align:center;padding:0 4px;font-size:16px}
 .lb{display:block;font-size:13px;color:var(--mute);margin:16px 0 6px}
 .in{width:100%;height:52px;border:0.5px solid var(--line);background:var(--card);border-radius:12px;padding:0 14px;font-size:17px;outline:0;box-sizing:border-box}
 .in:focus,.qty input:focus,.mg.ed input:focus,.rq input:focus{box-shadow:0 0 0 2px var(--ink)}
@@ -74,10 +85,12 @@ select.in{appearance:none;-webkit-appearance:none}
 .qty input{width:150px;text-align:center;font-size:48px;font-weight:600;border:0;background:none;border-radius:12px;outline:0;padding:4px 0}
 .qty span{font-size:20px;color:var(--mute)}
 .mg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0 6px}
+.mg.e2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mg.e3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .mc{background:var(--card);border-radius:12px;padding:10px 4px;text-align:center;display:block}
 .mc b,.mc input{display:block;font-size:20px;font-weight:600;text-align:center;width:100%;border:0;background:none;padding:0;outline:0;border-radius:6px;box-sizing:border-box}
 .mc span{display:block;font-size:13px;color:var(--mute);margin-top:2px}
-.mc.k b{color:var(--k)}.mc.p b,.mc.p input{color:var(--p)}.mc.fat b,.mc.fat input{color:var(--fat)}.mc.c b,.mc.c input{color:var(--c)}
+.mc.k b,.mc.k input{color:var(--k)}.mc.p b,.mc.p input{color:var(--p)}.mc.fat b,.mc.fat input{color:var(--fat)}.mc.c b,.mc.c input{color:var(--c)}
 .mg.ed .mc{border:0.5px solid var(--line)}
 .acts{display:grid;gap:10px;margin-top:18px}
 .acts.two{grid-template-columns:1fr 1fr}
@@ -111,21 +124,21 @@ const pad=n=>String(n).padStart(2,'0');
 const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const NOW=new Date();
 const todayStr=ymd(NOW);
-const mon=new Date(NOW);mon.setDate(NOW.getDate()-((NOW.getDay()+6)%7));
-const mondayStr=ymd(mon);
 const DAYS7=[];for(let i=6;i>=0;i--){const x=new Date(NOW);x.setDate(NOW.getDate()-i);DAYS7.push(ymd(x))}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=(n,d=1)=>{const v=Math.round(n*Math.pow(10,d))/Math.pow(10,d);return v.toLocaleString('en-AU',{maximumFractionDigits:d})};
 const num=v=>{const n=parseFloat(String(v).replace(',','.'));return isNaN(n)?0:n};
+const r1=n=>Math.round(n*10)/10;
+const KJ=4.184;
 
 const ICONS={
-  home:'<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>',
   back:'<path d="M15 5l-7 7 7 7"/>',
   fwd:'<path d="M9 5l7 7-7 7"/>',
+  home:'<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>',
   search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
   x:'<path d="M6 6l12 12M18 6L6 18"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
-  goals:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>'
+  cog:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'
 };
 const ic=n=>'<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+ICONS[n]+'</svg>';
 
@@ -155,26 +168,32 @@ const food=id=>foods.find(x=>x.id===id);
 const recipe=id=>recipes.find(x=>x.id===id);
 const Z={k:0,p:0,fat:0,c:0};
 const addM=(a,b)=>({k:a.k+b.k,p:a.p+b.p,fat:a.fat+b.fat,c:a.c+b.c});
+const scaleM=(m,f)=>({k:m.k*f,p:m.p*f,fat:m.fat*f,c:m.c*f});
 const mf=(f,q)=>{const r=q/f.per;return{k:f.k*r,p:f.p*r,fat:f.fat*r,c:f.c*r}};
 const mr=ing=>ing.reduce((a,i)=>addM(a,mf(food(i.id),i.q)),Z);
 const item=(kind,id)=>kind==='recipe'?recipe(id):food(id);
+const perAmt=u=>(u==='g'||u==='ml')?100:1;
+const yq=r=>r.yq>0?r.yq:1;
+const recipePer=r=>scaleM(mr(r.ing),perAmt(r.yu)/yq(r));
+const recipeMacros=(r,qty)=>scaleM(mr(r.ing),qty/yq(r));
+const recipeDefQty=r=>r.defQty>0?r.defQty:(perAmt(r.yu)===100?yq(r):1);
 
 const H=(h,m)=>h+m/60;
 const nowH=()=>{const n=new Date();return n.getHours()+n.getMinutes()/60};
 const fmtTime=h=>{const m=Math.round(h*60);return pad(Math.floor(m/60))+':'+pad(m%60)};
-const macLine=m=>'<span class="m-k">'+fmt(m.k,0)+' kcal</span> · <span class="m-p">P '+fmt(m.p)+'</span> · <span class="m-fat">F '+fmt(m.fat)+'</span> · <span class="m-c">C '+fmt(m.c)+'</span>';
+const macLine=(m,hl)=>'<span class="m-k'+(hl==='k'?' hl':'')+'">'+fmt(m.k,0)+' kcal</span> · <span class="m-p'+(hl==='p'?' hl':'')+'">P '+fmt(m.p)+'</span> · <span class="m-fat'+(hl==='fat'?' hl':'')+'">F '+fmt(m.fat)+'</span> · <span class="m-c'+(hl==='c'?' hl':'')+'">C '+fmt(m.c)+'</span>';
 function snapF(f){return{name:f.name,unit:f.unit,per:f.per,k:f.k,p:f.p,fat:f.fat,c:f.c}}
 function ingM(l){return l.reduce((a,i)=>addM(a,mf(i,i.q)),Z)}
 function entryM(e){return e.kind==='recipe'?ingM(e.ing):mf(e.f,e.qty)}
 let log=[];
 function logAdd(date,h,kind,id,qty){
   const it=item(kind,id),isR=kind==='recipe';
-  const e={id:++uid,date,h,kind,rid:id,name:it.name,qty:isR?null:qty,unit:isR?null:it.unit};
-  if(isR)e.ing=it.ing.map(i=>Object.assign(snapF(food(i.id)),{q:i.q}));else e.f=snapF(it);
+  const e={id:++uid,date,h,kind,rid:id,name:it.name,qty:qty,unit:isR?it.yu:it.unit};
+  if(isR){const f=qty/yq(it);e.ing=it.ing.map(i=>Object.assign(snapF(food(i.id)),{q:i.q*f}))}
+  else e.f=snapF(it);
   e.m=entryM(e);
   log.push(e);return e;
 }
-
 
 const G={k:2200,p:160,fat:70,c:220};
 const LAB=[['k','Calories',''],['p','Protein','g'],['fat','Fat','g'],['c','Carbs','g']];
@@ -183,6 +202,20 @@ const MS=[['k','kcal'],['p','P'],['fat','F'],['c','C']];
 const SKEY='macro-tracker-v1';
 const SEED_FOODS=foods.map(f=>Object.assign({},f));
 let SEEN=SEED_FOODS.map(f=>f.id);
+function normalizeData(){
+  recipes.forEach(r=>{if(!(r.yq>0))r.yq=1;if(!r.yu)r.yu='serve'});
+  log.forEach(e=>{if(e.kind==='recipe'&&!(e.qty>0)){e.qty=1;e.unit='serve'}});
+}
+function applyBackup(d){
+  foods=d.foods;
+  recipes=Array.isArray(d.recipes)?d.recipes:[];
+  log=Array.isArray(d.log)?d.log:[];
+  if(d.goals)Object.assign(G,d.goals);
+  const ids=[].concat(foods,recipes,log).map(x=>parseInt(String(x.id).replace(/\D/g,''),10)||0);
+  uid=ids.reduce((m,v)=>Math.max(m,v),Math.max(uid,100));
+  SEEN=SEED_FOODS.map(f=>f.id);
+  normalizeData();
+}
 function save(){
   try{localStorage.setItem(SKEY,JSON.stringify({v:1,foods:foods,recipes:recipes,log:log,goals:G,uid:uid,seen:SEEN}))}catch(e){}
 }
@@ -202,13 +235,18 @@ function load(){
         SEEN.push(f.id);
       }
     });
+    normalizeData();
+    
   }catch(e){}
 }
 load();
 
-const S={scope:'day',q:'',ed:null,edirty:false,rd:null,rdirty:false,gd:null,gdirty:false,xd:null,xdirty:false,ingTarget:'recipe',sday:todayStr};
+const S={scope:'day',sday:todayStr,q:'',sort:'pop',dir:'desc',flt:'all',ed:null,edirty:false,rd:null,rdirty:false,gd:null,gdirty:false,xd:null,xdirty:false,ingTarget:'recipe'};
 let cur={view:'home'};
 let stack=[];
+const logDate=()=>S.scope==='day'?S.sday:todayStr;
+const dayLabel=ds=>new Date(ds+'T12:00:00').toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
+function shiftDay(ds,n){const x=new Date(ds+'T12:00:00');x.setDate(x.getDate()+n);return ymd(x)}
 
 function dayTotals(ds){return log.filter(e=>e.date===ds).reduce((a,e)=>addM(a,e.m),Z)}
 function weekAvg(){
@@ -226,6 +264,14 @@ function fillHTML(key,v,g){
   const st=stateOf(key,v,g),pct=Math.min(100,v/g*100);
   return '<i'+(st==='lo'?' class="lo"':'')+' style="width:'+pct+'%;background:'+(st==='ov'?'var(--over)':'var(--'+key+')')+'"></i>';
 }
+function seg7(key){
+  const g=G[key];let h='<div class="sg" aria-hidden="true">';
+  DAYS7.forEach((ds,i)=>{
+    const v=dayTotals(ds)[key];
+    h+='<span'+(i===6?' class="td"':'')+'>'+fillHTML(key,v,g)+'</span>';
+  });
+  return h+'</div>';
+}
 function barsHTML(scope,ds){
   const wk=scope==='week',a=wk?weekAvg():dayTotals(ds||todayStr);
   return LAB.map(([key,name,u])=>{
@@ -238,18 +284,28 @@ function barsHTML(scope,ds){
     return '<div class="bar"><div class="bl"><span>'+name+(wk?' <span class="av">avg</span>':'')+'</span><span class="bv">'+val+'</span></div>'+track+'</div>';
   }).join('');
 }
-const segHTML=()=>'<div class="seg" role="group" aria-label="Range"><button data-act="scope" data-v="day" class="'+(S.scope==='day'?'on':'')+'">Day</button><button data-act="scope" data-v="week" class="'+(S.scope==='week'?'on':'')+'">Week</button></div>';
 const hd=(title,o)=>{o=o||{};return '<div class="hd">'+(o.back===false?'':'<button class="ib" data-act="back" aria-label="Back">'+ic('back')+'</button>')+'<h1>'+title+'</h1>'+(o.extra||'')+(o.home===false?'':'<button class="ib" data-act="home" aria-label="Home">'+ic('home')+'</button>')+'</div>';};
 function mgHTML(m){
   return '<div class="mg">'+MS.map(([k,l])=>'<div class="mc '+k+'"><b data-m="'+k+'">'+fmt(m[k],k==='k'?0:1)+'</b><span>'+l+'</span></div>').join('')+'</div>';
 }
 function setMG(m){MS.forEach(([k])=>{const el=document.querySelector('[data-m="'+k+'"]');if(el)el.textContent=fmt(m[k],k==='k'?0:1)})}
 
+/* ---------- search / browse ---------- */
 const band=h=>h<11?0:h<16?1:2;
 function freq(kind,id){
   const b=band(new Date().getHours());let s=0,t=0;
   log.forEach(e=>{if(e.kind===kind&&e.rid===id){t++;if(band(e.h)===b)s++}});
   return s*1000+t;
+}
+function lastUsed(kind,id){
+  let best=null;
+  log.forEach(e=>{if(e.kind===kind&&e.rid===id){const v=e.date+' '+fmtTime(e.h);if(!best||v>best.v)best={v:v,date:e.date}}});
+  return best;
+}
+function agoLabel(x){
+  const l=lastUsed(x.kind,x.it.id);if(!l)return 'never used';
+  const dd=Math.round((new Date(todayStr+'T12:00:00')-new Date(l.date+'T12:00:00'))/86400000);
+  return dd<=0?'today':dd===1?'yesterday':dd+' days ago';
 }
 function rank(name,q){
   const n=name.toLowerCase();
@@ -257,152 +313,168 @@ function rank(name,q){
   if(n.split(/[\s,()]+/).some(w=>w.startsWith(q)))return 1;
   return n.includes(q)?2:9;
 }
+const SORTS=[['pop','Popular now'],['recent','Recently used'],['az','A–Z'],['k','Calories'],['p','Protein'],['fat','Fat'],['c','Carbs'],['ppk','Protein per 100 kcal']];
+const DEFDIR={pop:'desc',recent:'desc',az:'asc',k:'desc',p:'desc',fat:'desc',c:'desc',ppk:'desc'};
+const macrosOf=x=>x.kind==='recipe'?recipePer(x.it):x.it;
+function sortVal(x,s){
+  if(s==='k'||s==='p'||s==='fat'||s==='c')return macrosOf(x)[s];
+  if(s==='ppk'){const m=macrosOf(x);return m.k>0?m.p/m.k*100:0}
+  if(s==='recent'){const l=lastUsed(x.kind,x.it.id);return l?parseFloat(l.v.replace(/\D/g,'')):-1}
+  if(s==='pop')return freq(x.kind,x.it.id);
+  return 0;
+}
 function results(mode,q){
   q=q.trim().toLowerCase();
+  const sort=mode==='rsearch'?'pop':S.sort,dir=mode==='rsearch'?'desc':S.dir,flt=mode==='home'?S.flt:'all';
   let a=[];
   if(mode!=='rsearch')foods.forEach(f=>a.push({kind:'food',it:f}));
   if(mode!=='isearch')recipes.forEach(r=>a.push({kind:'recipe',it:r}));
-  const fq=x=>freq(x.kind,x.it.id);
-  if(q){
-    a=a.map(x=>({kind:x.kind,it:x.it,r:rank(x.it.name,q)})).filter(x=>x.r<9)
-      .sort((x,y)=>x.r-y.r||fq(y)-fq(x)||x.it.name.localeCompare(y.it.name));
-  }else{
-    a.sort((x,y)=>fq(y)-fq(x)||x.it.name.localeCompare(y.it.name));
-  }
-  return a.slice(0,30);
+  if(flt==='food')a=a.filter(x=>x.kind==='food');
+  if(flt==='recipe')a=a.filter(x=>x.kind==='recipe');
+  if(q)a=a.map(x=>({kind:x.kind,it:x.it,r:rank(x.it.name,q)})).filter(x=>x.r<9);
+  a.sort((x,y)=>{
+    if(q&&sort==='pop'&&x.r!==y.r)return x.r-y.r;
+    if(sort==='az'){const c=x.it.name.localeCompare(y.it.name);return dir==='asc'?c:-c}
+    const d=sortVal(x,sort)-sortVal(y,sort);
+    if(d!==0)return dir==='asc'?d:-d;
+    return x.it.name.localeCompare(y.it.name);
+  });
+  return a;
 }
 function listHTML(mode,q){
   const a=results(mode,q);
   if(!a.length)return '<div class="empty">No matches.</div>';
+  const hl=(mode!=='rsearch'&&(S.sort==='k'||S.sort==='p'||S.sort==='fat'||S.sort==='c'))?S.sort:null;
   return a.map(x=>{
     const isR=x.kind==='recipe';
-    const rt=isR?'1 serving':'per '+fmt(x.it.per)+' '+x.it.unit;
-    const mm=isR?mr(x.it.ing):x.it;
+    let rt=isR?'per '+perAmt(x.it.yu)+' '+x.it.yu:'per '+fmt(x.it.per)+' '+x.it.unit;
+    if(mode!=='rsearch'&&S.sort==='ppk')rt=fmt(sortVal(x,'ppk'),1)+' g P per 100 kcal';
+    if(mode!=='rsearch'&&S.sort==='recent')rt=agoLabel(x);
     const act=mode==='rsearch'?'rpick':'pick';
-    return '<button class="row" data-act="'+act+'" data-k="'+x.kind+'" data-id="'+x.it.id+'"><span style="min-width:0"><span class="nm">'+esc(x.it.name)+(isR?'<span class="tag">Recipe</span>':'')+'</span><span class="ls">'+macLine(mm)+'</span></span><span class="rt">'+rt+'</span></button>';
+    return '<button class="row" data-act="'+act+'" data-k="'+x.kind+'" data-id="'+x.it.id+'"><span style="min-width:0"><span class="nm">'+esc(x.it.name)+(isR?'<span class="tag">Recipe</span>':'')+'</span><span class="ls">'+macLine(macrosOf(x),hl)+'</span></span><span class="rt">'+esc(rt)+'</span></button>';
   }).join('');
 }
 function addbarHTML(mode,q){
   if(mode==='rsearch')return '<button data-act="rnew">'+ic('plus')+'Add to new recipe</button>';
   q=q.trim();
-  return q?'<button data-act="addnew">'+ic('plus')+'Add new \u201C'+esc(q)+'\u201D</button>':'';
+  return '<button data-act="addnew">'+ic('plus')+(q?'Add new \u201C'+esc(q)+'\u201D':'Add new')+'</button>';
 }
 function updateList(){
-  const mode=cur.view==='home'?'home':cur.view;
+  const mode=cur.view==='search'?'home':cur.view;
   document.getElementById('list').innerHTML=listHTML(mode,S.q);
   const ab=document.getElementById('addbar');
   ab.innerHTML=addbarHTML(mode,S.q);
   ab.style.display=ab.innerHTML?'block':'none';
 }
-function searchBlock(mode,ph){
+function searchBlock(ph){
   return '<div class="srch">'+ic('search')+'<input id="q" type="search" autocomplete="off" autocapitalize="none" placeholder="'+ph+'" value="'+esc(S.q)+'"></div><div id="list" style="margin-top:6px"></div><div id="addbar" class="addbar"></div>';
 }
-
-function vHome(){
-  const d=NOW.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
-  return hd(scopeLabel(),{back:false,home:false,extra:segHTML()})+
-    '<div class="bars'+(S.scope==='week'?' wk':'')+'" data-act="stats" role="button" tabindex="0" aria-label="Open stats">'+barsHTML(S.scope)+'</div>'+
-    searchBlock('home','Search or add food');
+function vSearch(mode){
+  const isI=mode==='isearch';
+  const chips=isI?'':'<div class="chips">'+[['all','All'],['food','Foods'],['recipe','Recipes']].map(([v,l])=>'<button class="chip'+(S.flt===v?' on':'')+'" data-act="flt" data-v="'+v+'">'+l+'</button>').join('')+'</div>';
+  const sort='<div class="sortrow"><select class="in sel" id="sortsel" aria-label="Sort by">'+SORTS.map(([v,l])=>'<option value="'+v+'"'+(S.sort===v?' selected':'')+'>'+l+'</option>').join('')+'</select><button class="chip" data-act="sdir">'+(S.dir==='asc'?'↑ Ascending':'↓ Descending')+'</button></div>';
+  return '<div class="hd"><button class="ib" data-act="back" aria-label="Back">'+ic('back')+'</button><div class="srch">'+ic('search')+'<input id="q" type="search" autocomplete="off" autocapitalize="none" placeholder="'+(isI?'Add ingredient: search foods':'Search or add food')+'" value="'+esc(S.q)+'"></div></div>'+chips+sort+'<div id="list" style="margin-top:6px"></div><div id="addbar" class="addbar"></div>';
 }
-function vIsearch(){return hd('Add ingredient')+searchBlock('isearch','Search or add food')}
+const vSearchMain=()=>vSearch('home');
+const vIsearch=()=>vSearch('isearch');
 function vRsearch(){
   const p=cur.pending;
   const title=p?'Add '+esc(food(p.id).name)+' to recipe':'Choose recipe';
-  return hd(title)+searchBlock('rsearch','Search recipes');
+  return hd(title)+searchBlock('Search recipes');
+}
+
+/* ---------- home ---------- */
+function homeRow(){
+  const cog='<button class="ib" data-act="goals" aria-label="Settings">'+ic('cog')+'</button>';
+  if(S.scope==='week')return '<div class="hrow"><span></span><h1>Last 7 days</h1>'+cog+'</div>';
+  const at=S.sday>=todayStr;
+  const dt=new Date(S.sday+'T12:00:00'),wl=dt.toLocaleDateString('en-AU',{weekday:'long'}),ws=dt.toLocaleDateString('en-AU',{weekday:'short'});
+  return '<div class="hrow"><span></span><div class="hmid"><button class="ib sm" data-act="sprev" aria-label="Previous day">'+ic('back')+'</button><span class="wd" id="wd" data-long="'+wl+'" data-short="'+ws+'">'+wl+'</span>'+
+    '<input class="in dsel" type="date" id="s-date" value="'+esc(S.sday)+'" max="'+todayStr+'" aria-label="Date">'+
+    '<button class="ib sm" data-act="snext" aria-label="Next day"'+(at?' disabled style="visibility:hidden"':'')+'>'+ic('fwd')+'</button></div>'+cog+'</div>';
+    
+}
+function logHTML(){
+  const from=DAYS7[0];
+  const es=log.filter(e=>S.scope==='week'?(e.date>=from&&e.date<=todayStr):e.date===S.sday).slice().sort((a,b)=>b.date.localeCompare(a.date)||b.h-a.h||b.id-a.id);
+  const qtyTxt=e=>fmt(e.qty)+' '+e.unit;
+  const entryRow=e=>'<button class="row" data-act="entry" data-id="'+e.id+'"><span style="min-width:0"><span><span class="nm">'+esc(e.name)+'</span><span class="sub"> · '+esc(qtyTxt(e))+'</span></span><span class="ls">'+macLine(e.m)+'</span></span><span class="rt">'+fmtTime(e.h)+'</span></button>';
+  if(S.scope==='day')return es.length?es.map(entryRow).join(''):'<div class="empty">Nothing logged'+(S.sday===todayStr?' today':' on this day')+'.</div>';
+  const dates=[];es.forEach(e=>{if(dates.indexOf(e.date)<0)dates.push(e.date)});
+  if(!dates.length)return '<div class="empty">Nothing logged in the last 7 days.</div>';
+  return dates.map(ds=>{
+    const day=es.filter(e=>e.date===ds),tk=day.reduce((a,e)=>a+e.m.k,0);
+    const dd=new Date(ds+'T12:00:00').toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'short'});
+    return '<div class="dh"><span>'+dd+'</span><span>'+fmt(tk,0)+' kcal</span></div>'+day.map(entryRow).join('');
+  }).join('');
+}
+function vHome(){
+  return homeRow()+
+    '<div class="bars'+(S.scope==='week'?' wk':'')+'" data-act="togglescope" role="button" tabindex="0" aria-label="Switch between day and 7-day average">'+barsHTML(S.scope,S.sday)+'</div>'+
+    '<button class="srch" data-act="opensearch">'+ic('search')+'<span>Search or add food</span></button>'+
+    '<div style="margin-top:6px">'+logHTML()+'</div>';
+}
+
+/* ---------- detail (2a) ---------- */
+function loggingNote(){
+  return (cur.ctx!=='ing'&&logDate()!==todayStr)?'<div class="sub" style="padding:6px 4px 0">Logging to '+esc(dayLabel(logDate()))+'</div>':'';
 }
 function vDetail(){
   const isR=cur.kind==='recipe',it=item(cur.kind,cur.id);
   if(isR){
-    const m=mr(it.ing);
-    return hd(esc(it.name))+'<div class="sub" style="padding:14px 4px 0">1 serving</div>'+mgHTML(m)+
-      '<div style="margin-top:8px">'+it.ing.map(i=>{const f=food(i.id);return '<div class="ing"><div><div class="nm">'+esc(f.name)+'</div><div class="sb">'+macLine(mf(f,i.q))+'</div></div><span class="sub">'+fmt(i.q)+' '+f.unit+'</span></div>'}).join('')+'</div>'+
-      '<div class="acts two"><button class="btn" data-act="dlog">Log</button><button class="btn sec" data-act="editrecipe">Edit recipe</button></div>';
+    const f=cur.qty/yq(it);
+    return hd(esc(it.name))+loggingNote()+
+      '<div class="qty"><input id="qty" inputmode="decimal" value="'+fmt(cur.qty,2)+'" aria-label="Quantity"><span>'+esc(it.yu)+'</span></div>'+
+      mgHTML(recipeMacros(it,cur.qty))+
+      '<div style="margin-top:8px">'+it.ing.map((i,n)=>{const fd=food(i.id),q=i.q*f;return '<div class="ing"><div><div class="nm">'+esc(fd.name)+'</div><div class="sb" data-dl="'+n+'">'+macLine(mf(fd,q))+'</div></div><span class="sub" data-dq="'+n+'">'+fmt(q)+' '+esc(fd.unit)+'</span></div>'}).join('')+'</div>'+
+      '<div id="err" class="err"></div><div class="acts two"><button class="btn" data-act="dlog">Log</button><button class="btn sec" data-act="editrecipe">Edit recipe</button></div>';
   }
-  const m=mf(it,cur.qty);
   let acts;
   if(cur.ctx==='ing')acts='<div class="acts"><button class="btn" data-act="dtorecipe">'+(S.ingTarget==='entry'?'Add to entry':'Add to recipe')+'</button></div>';
   else acts='<div class="acts"><button class="btn" data-act="dlog">Log</button></div><div class="acts two" style="margin-top:10px"><button class="btn sec" data-act="dedit">Edit item</button><button class="btn sec" data-act="dtorecipe">Add to recipe</button></div>';
-  return hd(esc(it.name))+
+  return hd(esc(it.name))+loggingNote()+
     '<div class="qty"><input id="qty" inputmode="decimal" value="'+fmt(cur.qty,2)+'" aria-label="Quantity"><span>'+esc(it.unit)+'</span></div>'+
-    mgHTML(m)+'<div id="err" class="err"></div>'+acts;
+    mgHTML(mf(it,cur.qty))+'<div id="err" class="err"></div>'+acts;
 }
+
+/* ---------- item edit (2b) ---------- */
 function vEdit(){
   const d=S.ed;
   const units=UNITS.indexOf(d.unit)<0?UNITS.concat([d.unit]):UNITS;
+  const cell=(k,l,val)=>'<label class="mc '+k+'"><input id="e-'+k+'" inputmode="decimal" value="'+val+'" aria-label="'+l+'"><span>'+l+'</span></label>';
   return hd(d.id?'Edit item':'New item')+
     '<label class="lb" for="e-name">Name</label><input class="in" id="e-name" value="'+esc(d.name)+'" placeholder="Food name">'+
     '<div class="two"><div><label class="lb" for="e-per">Per</label><input class="in" id="e-per" inputmode="decimal" value="'+d.per+'"></div>'+
     '<div><label class="lb" for="e-unit">Unit</label><select class="in" id="e-unit">'+units.map(u=>'<option'+(u===d.unit?' selected':'')+'>'+esc(u)+'</option>').join('')+'</select></div></div>'+
-    '<label class="lb">Macros (calories fill in from P, F and C unless you edit them)</label><div class="mg ed">'+MS.map(([k,l])=>'<label class="mc '+k+'"><input id="e-'+k+'" inputmode="decimal" value="'+d[k]+'" aria-label="'+l+'"><span>'+l+'</span></label>').join('')+'</div>'+
+    '<label class="lb">Energy and macros (energy fills in from P, F and C unless you edit it)</label>'+
+    '<div class="mg ed e2">'+cell('kj','kJ',Math.round(d.k*KJ))+cell('k','kcal',r1(d.k))+'</div>'+
+    '<div class="mg ed e3">'+cell('p','P',d.p)+cell('fat','F',d.fat)+cell('c','C',d.c)+'</div>'+
     '<div id="err" class="err"></div>'+
     '<div class="acts two"><button class="btn" data-act="esave">Save</button><button class="btn sec" data-act="eaddrec">'+(cur.ctx==='ing'&&S.ingTarget==='entry'?'Add to entry':'Add to recipe')+'</button></div>'+(d.id?'<div class="acts" style="margin-top:10px"><button class="btn dg" data-act="edel">Delete item</button></div>':'');
 }
-function recipeTotals(){return mr(S.rd.ing)}
+
+/* ---------- recipe (3) ---------- */
+function draftBatch(){return mr(S.rd.ing)}
+function draftPer(){const d=S.rd;return scaleM(draftBatch(),perAmt(d.yu)/(d.yq>0?d.yq:1))}
+function rnoteHTML(){const b=draftBatch(),d=S.rd;return 'per '+perAmt(d.yu)+' '+esc(d.yu)+' · whole batch '+fmt(b.k,0)+' kcal'}
+function refreshRecipeCells(){setMG(draftPer());const n=document.getElementById('rnote');if(n)n.innerHTML=rnoteHTML()}
 function lineSub(i){return macLine(mf(food(i.id),i.q))}
 function vRecipe(){
   const d=S.rd;
+  const units=UNITS.map(u=>'<option'+(u===d.yu?' selected':'')+'>'+esc(u)+'</option>').join('');
   return hd(d.id?'Edit recipe':'New recipe')+
     '<label class="lb" for="r-name">Name</label><input class="in" id="r-name" value="'+esc(d.name)+'" placeholder="Recipe name">'+
-    '<div style="margin-top:8px">'+mgHTML(recipeTotals())+'</div>'+
+    '<label class="lb" for="r-yq">Makes</label><div class="two"><input class="in" id="r-yq" inputmode="decimal" value="'+d.yq+'" aria-label="Amount the recipe makes"><select class="in" id="r-yu" aria-label="Unit">'+units+'</select></div>'+
+    '<div style="margin-top:10px">'+mgHTML(draftPer())+'</div><div class="sub" id="rnote" style="padding:0 4px">'+rnoteHTML()+'</div>'+
+    '<label class="lb">Ingredients (whole batch)</label>'+
     '<div id="ings">'+d.ing.map((i,n)=>{const f=food(i.id);return '<div class="ing"><div><div class="nm">'+esc(f.name)+'</div><div class="sb" data-line="'+n+'">'+lineSub(i)+'</div></div><div class="rq"><input data-i="'+n+'" inputmode="decimal" value="'+fmt(i.q,2)+'" aria-label="Quantity of '+esc(f.name)+'"><span>'+esc(f.unit)+'</span></div><button class="ib" data-act="rremove" data-i="'+n+'" aria-label="Remove '+esc(f.name)+'">'+ic('x')+'</button></div>'}).join('')+(d.ing.length?'':'<div class="empty">No ingredients yet.</div>')+'</div><button class="row addrow" data-act="radd">'+ic('plus')+'Add ingredient</button>'+
     '<div id="err" class="err"></div>'+
-    '<div id="rbtns">'+rbtnsHTML()+'</div>'+
-    '';
+    '<div id="rbtns">'+rbtnsHTML()+'</div>';
 }
-function shiftDay(ds,n){const x=new Date(ds+'T12:00:00');x.setDate(x.getDate()+n);return ymd(x)}
-function dayNav(){
-  const atToday=S.sday>=todayStr;
-  return '<div style="display:flex;gap:8px;align-items:center;margin:0 0 12px"><button class="ib" data-act="sprev" aria-label="Previous day">'+ic('back')+'</button><input class="in" type="date" id="s-date" value="'+esc(S.sday)+'" max="'+todayStr+'" style="height:44px;flex:1;text-align:center" aria-label="Date"><button class="ib" data-act="snext" aria-label="Next day"'+(atToday?' disabled style="opacity:.3"':'')+'>'+ic('fwd')+'</button></div>';
-}
-function vStats(){
-  let rows='';
-  const from=S.scope==='week'?DAYS7[0]:todayStr;
-  const es=log.filter(e=>S.scope==='week'?(e.date>=from&&e.date<=todayStr):e.date===S.sday).slice().sort((a,b)=>b.date.localeCompare(a.date)||b.h-a.h||b.id-a.id);
-  const qtyTxt=e=>e.kind==='recipe'?'1 serving':fmt(e.qty)+' '+e.unit;
-  const entryRow=e=>'<button class="row ent" data-act="entry" data-id="'+e.id+'"><span style="min-width:0"><span><span class="nm">'+esc(e.name)+'</span><span class="sub"> · '+qtyTxt(e)+'</span></span><span class="ls">'+macLine(e.m)+'</span></span><span class="rt">'+fmtTime(e.h)+'</span></button>';
-  if(S.scope==='day'){
-    rows=es.length?es.map(entryRow).join(''):'<div class="empty">Nothing logged'+(S.sday===todayStr?' today':' on this day')+'.</div>';
-  }else{
-    const dates=[];es.forEach(e=>{if(dates.indexOf(e.date)<0)dates.push(e.date)});
-    rows=dates.map(ds=>{
-      const day=es.filter(e=>e.date===ds),tk=day.reduce((a,e)=>a+e.m.k,0);
-      const dd=new Date(ds+'T12:00:00').toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'short'});
-      return '<div class="dh"><span>'+dd+'</span><span>'+fmt(tk,0)+' kcal</span></div>'+day.map(entryRow).join('');
-    }).join('');
-  }
-  return hd(scopeLabel(),{extra:'<button class="ib" data-act="goals" aria-label="Edit goals">'+ic('goals')+'</button>'})+'<div style="margin:0 0 12px">'+segHTML()+'</div>'+(S.scope==='day'?dayNav():'')+'<div class="bars'+(S.scope==='week'?' wk':'')+'" style="cursor:default">'+barsHTML(S.scope,S.sday)+'</div>'+rows;
-}
-
-function vGoals(){
-  const d=S.gd,L={k:'Calories',p:'Protein',fat:'Fat',c:'Carbs'},U={k:'kcal',p:'g',fat:'g',c:'g'};
-  return hd('Daily goals')+
-    '<div style="margin-top:8px">'+['k','p','fat','c'].map(k=>'<div class="ing"><span class="nm m-'+k+'">'+L[k]+'</span><div class="rq"><input id="g-'+k+'" inputmode="decimal" value="'+d[k]+'" aria-label="'+L[k]+' goal"><span>'+U[k]+'</span></div></div>').join('')+'</div>'+
-    '<div id="err" class="err"></div>'+
-    '<div class="acts"><button class="btn" data-act="gsave">Save</button></div>'+
-    '<label class="lb">Backup</label><div class="acts two"><button class="btn sec" data-act="exportfile">Download backup</button><button class="btn sec" data-act="exportcopy">Copy backup</button></div><div class="sub" style="padding:8px 4px 0">Saves your log, foods, recipes and goals as a JSON file.</div>';
-}
-
-function seg7(key){
-  const g=G[key];let h='<div class="sg" aria-hidden="true">';
-  DAYS7.forEach((ds,i)=>{
-    const v=dayTotals(ds)[key];
-    h+='<span'+(i===6?' class="td"':'')+'>'+fillHTML(key,v,g)+'</span>';
-  });
-  return h+'</div>';
-}
-function scopeLabel(){
-  if(S.scope==='day'){
-    const ds=cur.view==='stats'?S.sday:todayStr;
-    const dt=new Date(ds+'T12:00:00').toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
-    return ds===todayStr?'Today · '+dt:dt;
-  }
-  return 'Last 7 days';
-}
-function dayLabel(ds){return new Date(ds+'T12:00:00').toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})}
 function rdiffers(){
   const d=S.rd;if(!d||!d.id)return false;
   const r=recipe(d.id);if(!r)return false;
-  return r.ing.length!==d.ing.length||r.ing.some((i,n)=>i.id!==d.ing[n].id||i.q!==d.ing[n].q);
+  return r.yq!==d.yq||r.yu!==d.yu||r.ing.length!==d.ing.length||r.ing.some((i,n)=>i.id!==d.ing[n].id||i.q!==d.ing[n].q);
 }
 function rbtnsHTML(){
   const sn=rdiffers();
@@ -413,38 +485,61 @@ function rbtnsHTML(){
 function updateRBtns(){const b=document.getElementById('rbtns');if(b)b.innerHTML=rbtnsHTML()}
 function restoreRecipe(pv){
   if(!pv)return;
-  const r=recipe(pv.id);if(r){r.name=pv.name;r.ing=pv.ing.map(i=>({id:i.id,q:i.q}))}
+  const r=recipe(pv.id);if(r){r.name=pv.name;r.yq=pv.yq;r.yu=pv.yu;r.ing=pv.ing.map(i=>({id:i.id,q:i.q}))}
 }
+
+/* ---------- settings ---------- */
+function vGoals(){
+  const d=S.gd,L={k:'Calories',p:'Protein',fat:'Fat',c:'Carbs'},U={k:'kcal',p:'g',fat:'g',c:'g'};
+  return hd('Settings',{home:false})+
+    '<label class="lb">Daily goals</label>'+
+    '<div>'+['k','p','fat','c'].map(k=>'<div class="ing"><span class="nm m-'+k+'">'+L[k]+'</span><div class="rq"><input id="g-'+k+'" inputmode="decimal" value="'+d[k]+'" aria-label="'+L[k]+' goal"><span>'+U[k]+'</span></div></div>').join('')+'</div>'+
+    '<div id="err" class="err"></div>'+
+    '<div class="acts"><button class="btn" data-act="gsave">Save</button></div>'+
+    '<label class="lb">Backup</label><div class="acts two" style="margin-top:0"><button class="btn sec" data-act="exportfile">Download backup</button><button class="btn sec" data-act="exportcopy">Copy backup</button></div><div class="sub" style="padding:8px 4px 0">Saves your log, foods, recipes and goals as a JSON file.</div>'+
+    '<label class="lb">Restore</label><div class="acts" style="margin-top:0"><button class="btn sec" data-act="pickfile">Restore from file</button></div><input type="file" id="restore-file" accept=".json,application/json" hidden>'+
+    '<label class="lb" for="restore-text">Or paste the backup text</label><textarea class="in" id="restore-text" style="height:90px;padding:10px 14px" placeholder="Paste the backup JSON here"></textarea><div class="acts" style="margin-top:10px"><button class="btn sec" data-act="restoretext">Restore from pasted text</button></div>';
+}
+
+/* ---------- log entry edit ---------- */
 function confirmDlg(title,msg,ok,fn){
   document.getElementById('dlg').innerHTML='<div class="ov"><div class="sheet" role="dialog" aria-label="'+esc(title)+'"><h2>'+esc(title)+'</h2><p>'+esc(msg)+'</p><div class="acts">'+(fn?'<button class="btn dg" data-act="dok">'+esc(ok)+'</button>':'')+'<button class="btn sec" data-act="dcancel">'+(fn?'Cancel':'Close')+'</button></div></div></div>';
   window._dok=fn||null;
 }
 function vEntry(){
   const e=log.find(x=>x.id===cur.id),x=S.xd,isR=e.kind==='recipe';
-  const sub='';
   const tm='<label class="lb" for="x-date">Date</label><input class="in" type="date" id="x-date" value="'+esc(x.date)+'" max="'+todayStr+'"><label class="lb" for="x-time">Time (24-hour)</label><input class="in" id="x-time" inputmode="numeric" value="'+esc(x.time)+'" placeholder="HH:MM">';
   const acts='<div id="err" class="err"></div><div class="acts"><button class="btn" data-act="xsave">Save changes</button></div><div class="acts" style="margin-top:10px"><button class="btn dg" data-act="xdel">Remove entry</button></div>';
+  const q='<div class="qty"><input id="x-qty" inputmode="decimal" value="'+fmt(x.qty,2)+'" aria-label="Quantity"><span>'+esc(e.unit)+'</span></div>';
   if(isR){
-    return hd(esc(e.name))+sub+mgHTML(ingM(x.ing))+
+    return hd(esc(e.name))+q+mgHTML(ingM(x.ing))+
       '<div style="margin-top:8px">'+x.ing.map((i,n)=>'<div class="ing"><div><div class="nm">'+esc(i.name)+'</div><div class="sb" data-xline="'+n+'">'+macLine(mf(i,i.q))+'</div></div><div class="rq"><input data-xi="'+n+'" inputmode="decimal" value="'+fmt(i.q,2)+'" aria-label="Quantity of '+esc(i.name)+'"><span>'+esc(i.unit)+'</span></div><button class="ib" data-act="xrem" data-xi="'+n+'" aria-label="Remove '+esc(i.name)+'">'+ic('x')+'</button></div>').join('')+'</div><button class="row addrow" data-act="xadd">'+ic('plus')+'Add ingredient</button>'+tm+acts;
   }
-  return hd(esc(e.name))+sub+'<div class="qty"><input id="x-qty" inputmode="decimal" value="'+fmt(x.qty,2)+'" aria-label="Quantity"><span>'+esc(e.unit)+'</span></div>'+mgHTML(mf(e.f,x.qty))+tm+acts;
+  return hd(esc(e.name))+q+mgHTML(mf(e.f,x.qty))+tm+acts;
 }
 
+/* ---------- shell ---------- */
 const app=document.getElementById('app');
 function render(keep){
   save();
   const y=window.scrollY;
-  const V={home:vHome,isearch:vIsearch,rsearch:vRsearch,detail:vDetail,edit:vEdit,recipe:vRecipe,stats:vStats,goals:vGoals,entry:vEntry};
+  const V={home:vHome,search:vSearchMain,isearch:vIsearch,rsearch:vRsearch,detail:vDetail,edit:vEdit,recipe:vRecipe,goals:vGoals,entry:vEntry};
   app.innerHTML=V[cur.view]();
-  if(cur.view==='home'||cur.view==='isearch'||cur.view==='rsearch')updateList();
+  if(cur.view==='search'||cur.view==='isearch'||cur.view==='rsearch')updateList();
   if(cur.view==='detail'){const q=document.getElementById('qty');if(q&&!keep){q.focus();q.select()}}
-  if(cur.view==='isearch'||cur.view==='rsearch'){const q=document.getElementById('q');if(q&&!keep)q.focus()}
+  if(cur.view==='rsearch'){const q=document.getElementById('q');if(q&&!keep)q.focus()}
+  if(cur.view==='home')fitDay();
   setHints();
   window.scrollTo(0,keep?y:0);
 }
+function fitDay(){
+  const wd=document.getElementById('wd'),mid=document.querySelector('.hmid');
+  if(!wd||!mid)return;
+  wd.textContent=wd.dataset.long;
+  if(mid.scrollWidth>mid.clientWidth+1)wd.textContent=wd.dataset.short;
+}
 const CHAIN={edit:1,recipe:1,entry:1,goals:1};
-function chainEls(){return Array.from(app.querySelectorAll('input,select'))}
+function chainEls(){return Array.from(app.querySelectorAll('input:not([type=file]),select'))}
 function setHints(){
   if(!CHAIN[cur.view])return;
   const els=chainEls();
@@ -471,6 +566,18 @@ function leave(fn,all){
   window._discard=()=>{S.edirty=false;S.rdirty=false;S.gdirty=false;S.xdirty=false;fn()};
 }
 function showErr(m){const e=document.getElementById('err');if(e)e.textContent=m}
+function startRestore(txt){
+  let d;
+  try{d=JSON.parse(txt)}catch(e){toast('That isn’t valid JSON.');return}
+  const rec=d&&Array.isArray(d.recipes)?d.recipes:[],lg=d&&Array.isArray(d.log)?d.log:[];
+  const good=d&&Array.isArray(d.foods)&&d.foods.length&&d.foods.every(f=>f&&f.id&&typeof f.name==='string'&&f.per>0&&typeof f.k==='number')
+    &&(!d.recipes||Array.isArray(d.recipes))&&(!d.log||Array.isArray(d.log))
+    &&rec.every(r=>r&&Array.isArray(r.ing)&&r.ing.every(i=>d.foods.some(f=>f.id===i.id)))
+    &&lg.every(e=>e&&e.date&&typeof e.h==='number'&&e.m&&(e.f||e.ing));
+  if(!good){toast('That doesn’t look like a backup from this app.');return}
+  const n=d.foods.length+' foods, '+rec.length+' recipes, '+lg.length+' log entries';
+  confirmDlg('Replace your data?','This backup has '+n+'. Restoring replaces everything currently in the app.','Restore',()=>{applyBackup(d);toHome('Backup restored')});
+}
 function backupText(){
   return JSON.stringify({app:'macro-tracker',version:1,exported:new Date().toISOString(),goals:G,foods:foods,recipes:recipes,log:log},null,2);
 }
@@ -492,33 +599,44 @@ function commitFood(){
   if(!d.name.trim()){showErr('Enter a name.');return null}
   if(!(d.per>0)){showErr('Enter an amount greater than zero for \u201Cper\u201D.');return null}
   const f={name:d.name.trim(),per:d.per,unit:d.unit,k:d.k,p:d.p,fat:d.fat,c:d.c};
-  if(d.id){const o=food(d.id);S.edChg=(o.per!==f.per||o.unit!==f.unit);if(S.edChg)f.defQty=f.per;Object.assign(o,f)}else{d.id='f'+(++uid);f.defQty=f.per;S.edChg=true;foods.push(Object.assign({id:d.id},f))}
+  if(d.id){const o=food(d.id);S.edChg=(o.per!==f.per||o.unit!==f.unit);if(S.edChg)f.defQty=f.per;Object.assign(o,f)}
+  else{d.id='f'+(++uid);f.defQty=f.per;S.edChg=true;foods.push(Object.assign({id:d.id},f))}
   S.edirty=false;
   return food(d.id);
 }
 function commitRecipe(){
   const d=S.rd;
   if(!d.name.trim()){showErr('Name your recipe.');return null}
+  if(!(d.yq>0)){showErr('Enter how much the recipe makes.');return null}
   if(!d.ing.length){showErr('Add an ingredient.');return null}
   const ing=d.ing.map(i=>({id:i.id,q:i.q}));
   S.rprev=null;
-  if(d.id){const r=recipe(d.id);const ch=r.name!==d.name.trim()||rdiffers();if(ch)S.rprev={id:r.id,name:r.name,ing:r.ing.map(i=>({id:i.id,q:i.q}))};r.name=d.name.trim();r.ing=ing}
-  else{const r={id:'r'+(++uid),name:d.name.trim(),ing:ing};recipes.push(r);d.id=r.id}
+  if(d.id){
+    const r=recipe(d.id);
+    const ch=r.name!==d.name.trim()||rdiffers();
+    if(ch)S.rprev={id:r.id,name:r.name,yq:r.yq,yu:r.yu,ing:r.ing.map(i=>({id:i.id,q:i.q}))};
+    if(r.yu!==d.yu)delete r.defQty;
+    r.name=d.name.trim();r.yq=d.yq;r.yu=d.yu;r.ing=ing;
+  }else{
+    const r={id:'r'+(++uid),name:d.name.trim(),yq:d.yq,yu:d.yu,ing:ing};recipes.push(r);d.id=r.id;
+  }
   S.rdirty=false;
   return recipe(d.id);
 }
 function openRecipe(r,pending,dirty,nm){
-  S.rd={id:r?r.id:null,name:r?r.name:(nm||''),ing:r?r.ing.map(i=>({id:i.id,q:i.q})):[]};
+  S.rd={id:r?r.id:null,name:r?r.name:(nm||''),yq:r?r.yq:1,yu:r?r.yu:'serve',ing:r?r.ing.map(i=>({id:i.id,q:i.q})):[]};
   if(pending)S.rd.ing.push({id:pending.id,q:pending.q});
   S.rdirty=!!dirty;
   go('recipe');
 }
 
 const ACT={
-  scope:t=>{S.scope=t.dataset.v;render(true)},
-  stats:()=>{S.sday=todayStr;go('stats')},
+  togglescope:()=>{S.scope=S.scope==='day'?'week':'day';render(true)},
   sprev:()=>{S.sday=shiftDay(S.sday,-1);render(true)},
   snext:()=>{if(S.sday<todayStr){S.sday=shiftDay(S.sday,1);render(true)}},
+  opensearch:()=>{S.q='';S.sort='pop';S.dir='desc';S.flt='all';go('search')},
+  flt:t=>{S.flt=t.dataset.v;render(true)},
+  sdir:()=>{S.dir=S.dir==='asc'?'desc':'asc';render(true)},
   home:()=>leave(()=>toHome(),true),
   back:()=>leave(()=>{cur=stack.pop()||{view:'home'};render()}),
   keep:()=>{document.getElementById('dlg').innerHTML=''},
@@ -526,7 +644,7 @@ const ACT={
   undo:()=>{if(window._undo)window._undo();document.getElementById('toast').innerHTML='';render(true)},
   pick:t=>{
     const kind=t.dataset.k,id=t.dataset.id;
-    go('detail',{kind:kind,id:id,qty:kind==='food'?lastQty(id):1,ctx:cur.view==='isearch'?'ing':'log'});
+    go('detail',{kind:kind,id:id,qty:kind==='food'?lastQty(id):recipeDefQty(recipe(id)),ctx:cur.view==='isearch'?'ing':'log'});
   },
   addnew:()=>{
     const ctx=cur.view==='isearch'?'ing':'log';
@@ -534,17 +652,19 @@ const ACT={
     go('edit',{ctx:ctx});
   },
   dlog:()=>{
+    if(!(cur.qty>0)){showErr('Enter a quantity.');return}
     if(cur.kind==='recipe'){
-      const e=logAdd(todayStr,nowH(),'recipe',cur.id);
+      const r=recipe(cur.id);
+      const e=logAdd(logDate(),nowH(),'recipe',cur.id,cur.qty);r.defQty=cur.qty;
       toHome(e.name+' logged',()=>{log=log.filter(x=>x.id!==e.id)});return;
     }
-    if(!(cur.qty>0)){showErr('Enter a quantity.');return}
-    const e=logAdd(todayStr,nowH(),'food',cur.id,cur.qty);food(cur.id).defQty=cur.qty;
+    const e=logAdd(logDate(),nowH(),'food',cur.id,cur.qty);food(cur.id).defQty=cur.qty;
     toHome(e.name+' logged',()=>{log=log.filter(x=>x.id!==e.id)});
   },
   dedit:()=>{S.ed=Object.assign({},food(cur.id));S.ed.kManual=Math.abs(S.ed.k-Math.round(4*S.ed.p+4*S.ed.c+9*S.ed.fat))>1;S.edirty=false;go('edit',{ctx:cur.ctx,qty:cur.qty})},
-  dtorecipe:()=>{if(cur.qty>0)food(cur.id).defQty=cur.qty;
+  dtorecipe:()=>{
     if(!(cur.qty>0)){showErr('Enter a quantity.');return}
+    food(cur.id).defQty=cur.qty;
     if(cur.ctx==='ing'){addIngToTarget(cur.id,cur.qty)}
     else{S.q='';go('rsearch',{pending:{id:cur.id,q:cur.qty},mode:'add'})}
   },
@@ -566,39 +686,43 @@ const ACT={
     openRecipe(r,cur.pending,!!cur.pending);
   },
   rnew:()=>openRecipe(null,cur.pending,!!cur.pending||!!S.q.trim(),S.q.trim()),
-  radd:()=>{S.ingTarget='recipe';S.q='';go('isearch',{})},
-  xadd:()=>{S.ingTarget='entry';S.q='';go('isearch',{})},
+  radd:()=>{S.ingTarget='recipe';S.q='';S.sort='pop';S.dir='desc';go('isearch',{})},
+  xadd:()=>{S.ingTarget='entry';S.q='';S.sort='pop';S.dir='desc';go('isearch',{})},
   goals:()=>{S.gd={k:G.k,p:G.p,fat:G.fat,c:G.c};S.gdirty=false;go('goals')},
   gsave:()=>{
     const d=S.gd;
     if(!(d.k>0&&d.p>0&&d.fat>0&&d.c>0)){showErr('Enter a number greater than zero for every goal.');return}
     Object.assign(G,d);S.gdirty=false;
-    cur=stack.pop()||{view:'stats'};render();
+    cur=stack.pop()||{view:'home'};render();
   },
-  entry:t=>{const e=log.find(y=>y.id===+t.dataset.id);S.xd={date:e.date,time:fmtTime(e.h),qty:e.qty,ing:e.ing?e.ing.map(i=>Object.assign({},i)):null};S.xdirty=false;go('entry',{id:e.id})},
+  entry:t=>{
+    const e=log.find(y=>y.id===+t.dataset.id);
+    S.xd={date:e.date,time:fmtTime(e.h),qty:e.qty,qv:e.qty,ing:e.ing?e.ing.map(i=>Object.assign({},i)):null};
+    S.xdirty=false;go('entry',{id:e.id});
+  },
   xrem:t=>{S.xd.ing.splice(+t.dataset.xi,1);S.xdirty=true;render(true)},
   xsave:()=>{
     const e=log.find(y=>y.id===cur.id),x=S.xd;
     const mt=/^(\d{1,2}):?(\d{2})$/.exec(String(x.time).trim());
     if(!mt||Number(mt[1])>23||Number(mt[2])>59){showErr('Enter the time as 24-hour HH:MM.');return}
     if(!/^\d{4}-\d{2}-\d{2}$/.test(x.date)||isNaN(new Date(x.date+'T12:00:00'))||x.date>todayStr){showErr('Enter a valid date that is not in the future.');return}
+    if(!(x.qty>0)){showErr('Enter a quantity.');return}
     if(e.kind==='recipe'){
       if(!x.ing.length){showErr('Keep at least one ingredient.');return}
       if(x.ing.some(i=>!(i.q>0))){showErr('Enter a quantity for every ingredient.');return}
       e.ing=x.ing.map(i=>Object.assign({},i));
-    }else{
-      if(!(x.qty>0)){showErr('Enter a quantity.');return}
-      e.qty=x.qty;
     }
-    e.date=x.date;if(S.scope==='day')S.sday=e.date;e.h=Number(mt[1])+Number(mt[2])/60;e.m=entryM(e);S.xdirty=false;
-    cur=stack.pop()||{view:'stats'};render();
+    e.qty=x.qty;
+    e.date=x.date;if(S.scope==='day')S.sday=e.date;
+    e.h=Number(mt[1])+Number(mt[2])/60;e.m=entryM(e);S.xdirty=false;
+    cur=stack.pop()||{view:'home'};render();
   },
   xdel:()=>{
     const e=log.find(y=>y.id===cur.id);
-    const what=e.kind==='recipe'?e.name:e.name+', '+fmt(e.qty)+' '+e.unit;
+    const what=e.name+', '+fmt(e.qty)+' '+e.unit;
     confirmDlg('Remove '+what+'?','It will be removed from your log.','Remove',()=>{
       const idx=log.findIndex(y=>y.id===e.id);const old=log.splice(idx,1)[0];
-      S.xdirty=false;cur=stack.pop()||{view:'stats'};render();
+      S.xdirty=false;cur=stack.pop()||{view:'home'};render();
       toast('Removed '+old.name,()=>{log.splice(idx,0,old)});
     });
   },
@@ -620,14 +744,17 @@ const ACT={
   rsavenew:()=>{
     const d=S.rd,nm=d.name.trim();
     if(!nm){showErr('Name your recipe.');return}
+    if(!(d.yq>0)){showErr('Enter how much the recipe makes.');return}
     if(!d.ing.length){showErr('Add an ingredient.');return}
     if(recipes.some(r=>r.name.trim().toLowerCase()===nm.toLowerCase())){showErr('A recipe called “'+nm+'” already exists. Choose a different name.');return}
-    const r={id:'r'+(++uid),name:nm,ing:d.ing.map(i=>({id:i.id,q:i.q}))};recipes.push(r);
-    S.rd={id:r.id,name:r.name,ing:r.ing.map(i=>({id:i.id,q:i.q}))};S.rdirty=false;
+    const r={id:'r'+(++uid),name:nm,yq:d.yq,yu:d.yu,ing:d.ing.map(i=>({id:i.id,q:i.q}))};recipes.push(r);
+    S.rd={id:r.id,name:r.name,yq:r.yq,yu:r.yu,ing:r.ing.map(i=>({id:i.id,q:i.q}))};S.rdirty=false;
     render(true);toast('Saved as '+r.name);
   },
   dok:()=>{document.getElementById('dlg').innerHTML='';if(window._dok)window._dok()},
   dcancel:()=>{document.getElementById('dlg').innerHTML=''},
+  pickfile:()=>{const f=document.getElementById('restore-file');if(f)f.click()},
+  restoretext:()=>{const t=document.getElementById('restore-text');startRestore(t?t.value:'')},
   exportfile:()=>{
     try{
       const blob=new Blob([backupText()],{type:'application/json'});
@@ -645,7 +772,8 @@ const ACT={
   rremove:t=>{S.rd.ing.splice(+t.dataset.i,1);S.rdirty=true;render(true)},
   rlog:()=>{
     const r=commitRecipe();if(!r)return;
-    const e=logAdd(todayStr,nowH(),'recipe',r.id);
+    const qty=recipeDefQty(r);
+    const e=logAdd(logDate(),nowH(),'recipe',r.id,qty);r.defQty=qty;
     const pv=S.rprev;toHome(r.name+' saved and logged',()=>{log=log.filter(x=>x.id!==e.id);restoreRecipe(pv)});
   },
   rsave:()=>{
@@ -672,34 +800,77 @@ app.addEventListener('keydown',e=>{
     else if(nx.select)nx.select();
   }
 });
-app.addEventListener('change',e=>{if(e.target.id==='s-date'){const v=e.target.value;if(/^\d{4}-\d{2}-\d{2}$/.test(v)&&v<=todayStr){S.sday=v;render(true)}}});
-app.addEventListener('change',e=>{if(e.target.id==='e-unit'){const k=document.getElementById('e-k');if(k){k.focus();k.select()}}});
+app.addEventListener('change',e=>{
+  if(e.target.id==='s-date'){const v=e.target.value;if(/^\d{4}-\d{2}-\d{2}$/.test(v)&&v<=todayStr){S.sday=v;render(true)}}
+  if(e.target.id==='e-unit'){const k=document.getElementById('e-kj');if(k){k.focus();k.select()}}
+  if(e.target.id==='restore-file'){const f=e.target.files&&e.target.files[0];if(f){const rd=new FileReader();rd.onload=()=>startRestore(String(rd.result));rd.readAsText(f)}e.target.value=''}
+});
 app.addEventListener('input',e=>{
   const t=e.target,id=t.id||'';
   if(id==='q'){S.q=t.value;updateList();return}
-  if(id==='qty'){cur.qty=num(t.value);const m=mf(food(cur.id),cur.qty);setMG(m);return}
-  if(id.indexOf('e-')===0){
-    const k=id.slice(2);S.edirty=true;
-    if(k==='name')S.ed.name=t.value;
-    else if(k==='unit')S.ed.unit=t.value;
-    else{
-      S.ed[k]=num(t.value);
-      const auto=()=>Math.round(4*S.ed.p+4*S.ed.c+9*S.ed.fat);
-      if(k==='k'){S.ed.kManual=t.value.trim()!=='';if(!S.ed.kManual)S.ed.k=auto()}
-      else if(!S.ed.kManual){S.ed.k=auto();document.getElementById('e-k').value=S.ed.k}
-    }
+  if(id==='sortsel'){S.sort=t.value;S.dir=DEFDIR[S.sort];render(true);return}
+  if(id==='qty'){
+    cur.qty=num(t.value);
+    if(cur.kind==='recipe'){
+      const r=recipe(cur.id),f=cur.qty/yq(r);
+      setMG(recipeMacros(r,cur.qty));
+      r.ing.forEach((i,n)=>{
+        const fd=food(i.id),q=i.q*f;
+        const a=document.querySelector('[data-dl="'+n+'"]'),b=document.querySelector('[data-dq="'+n+'"]');
+        if(a)a.innerHTML=macLine(mf(fd,q));
+        if(b)b.textContent=fmt(q)+' '+fd.unit;
+      });
+    }else setMG(mf(food(cur.id),cur.qty));
     return;
   }
-  if(id==='x-qty'){const e=log.find(y=>y.id===cur.id);S.xd.qty=num(t.value);S.xdirty=true;setMG(mf(e.f,S.xd.qty));return}
+  if(id.indexOf('e-')===0){
+    const k=id.slice(2),ed=S.ed;S.edirty=true;
+    const auto=()=>Math.round(4*ed.p+4*ed.c+9*ed.fat);
+    const setE=kc=>{
+      ed.k=kc;
+      const a=document.getElementById('e-k'),b=document.getElementById('e-kj');
+      if(a&&document.activeElement!==a)a.value=r1(kc);
+      if(b&&document.activeElement!==b)b.value=Math.round(kc*KJ);
+    };
+    if(k==='name')ed.name=t.value;
+    else if(k==='unit')ed.unit=t.value;
+    else if(k==='per')ed.per=num(t.value);
+    else if(k==='kj'){const v=t.value.trim();ed.kManual=v!=='';setE(v===''?auto():r1(num(v)/KJ))}
+    else if(k==='k'){const v=t.value.trim();ed.kManual=v!=='';setE(v===''?auto():num(v))}
+    else{ed[k]=num(t.value);if(!ed.kManual)setE(auto())}
+    return;
+  }
+  if(id==='x-qty'){
+    const e=log.find(y=>y.id===cur.id),n=num(t.value);
+    S.xdirty=true;S.xd.qty=n;
+    if(e.kind==='recipe'){
+      if(n>0&&S.xd.qv>0){
+        const f=n/S.xd.qv;S.xd.ing.forEach(i=>{i.q*=f});S.xd.qv=n;
+        document.querySelectorAll('input[data-xi]').forEach((el,k)=>{
+          el.value=fmt(S.xd.ing[k].q,2);
+          const ln=document.querySelector('[data-xline="'+k+'"]');
+          if(ln)ln.innerHTML=macLine(mf(S.xd.ing[k],S.xd.ing[k].q));
+        });
+        setMG(ingM(S.xd.ing));
+      }
+    }else setMG(mf(e.f,n));
+    return;
+  }
   if(id==='x-date'){S.xd.date=t.value;S.xdirty=true;return}
   if(id==='x-time'){S.xd.time=t.value;S.xdirty=true;return}
-  if(t.dataset&&t.dataset.xi!==undefined){const n=+t.dataset.xi,i=S.xd.ing[n];i.q=num(t.value);S.xdirty=true;const ln=document.querySelector('[data-xline="'+n+'"]');if(ln)ln.innerHTML=macLine(mf(i,i.q));setMG(ingM(S.xd.ing));return}
+  if(t.dataset&&t.dataset.xi!==undefined){
+    const n=+t.dataset.xi,i=S.xd.ing[n];i.q=num(t.value);S.xdirty=true;
+    const ln=document.querySelector('[data-xline="'+n+'"]');if(ln)ln.innerHTML=macLine(mf(i,i.q));
+    setMG(ingM(S.xd.ing));return;
+  }
   if(id.indexOf('g-')===0){S.gd[id.slice(2)]=num(t.value);S.gdirty=true;return}
   if(id==='r-name'){S.rd.name=t.value;S.rdirty=true;return}
+  if(id==='r-yq'){S.rd.yq=num(t.value);S.rdirty=true;refreshRecipeCells();updateRBtns();return}
+  if(id==='r-yu'){S.rd.yu=t.value;S.rdirty=true;refreshRecipeCells();updateRBtns();return}
   if(t.dataset&&t.dataset.i!==undefined){
     const n=+t.dataset.i;S.rd.ing[n].q=num(t.value);S.rdirty=true;
     const sub=document.querySelector('[data-line="'+n+'"]');if(sub)sub.innerHTML=lineSub(S.rd.ing[n]);
-    setMG(recipeTotals());updateRBtns();
+    refreshRecipeCells();updateRBtns();
   }
 });
 window.addEventListener('pagehide',save);
