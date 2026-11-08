@@ -75,7 +75,10 @@ button.srch span{color:var(--mute);font-size:17px}
 .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .sortrow{display:flex;gap:8px;align-items:center;margin:10px 0 0}
 select.sel{flex:1;min-width:0;height:44px;font-size:15px;padding:0 12px}
-.in.dsel{flex:none;width:120px;height:44px;text-align:center;padding:0 4px;font-size:16px}
+.dbox{position:relative;display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 14px;border:0.5px solid var(--line);background:var(--card);border-radius:12px;font-size:16px;white-space:nowrap;flex:none}
+.dbox .dtxt{pointer-events:none}
+.dover{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;cursor:pointer;box-sizing:border-box}
+.dover::-webkit-calendar-picker-indicator{position:absolute;top:0;left:0;width:100%;height:100%;margin:0;padding:0;cursor:pointer}
 .lb{display:block;font-size:13px;color:var(--mute);margin:16px 0 6px}
 .in{width:100%;height:52px;border:0.5px solid var(--line);background:var(--card);border-radius:12px;padding:0 14px;font-size:17px;outline:0;box-sizing:border-box}
 .in:focus,.qty input:focus,.mg.ed input:focus,.rq input:focus{box-shadow:0 0 0 2px var(--ink)}
@@ -389,8 +392,8 @@ function homeRow(){
   if(S.scope==='week')return '<div class="hrow"><span></span><h1>Last 7 days</h1>'+cog+'</div>';
   const at=S.sday>=todayStr;
   const dt=new Date(S.sday+'T12:00:00'),wl=dt.toLocaleDateString('en-AU',{weekday:'long'}),ws=dt.toLocaleDateString('en-AU',{weekday:'short'});
-  return '<div class="hrow"><span></span><div class="hmid"><button class="ib sm" data-act="sprev" aria-label="Previous day">'+ic('back')+'</button><span class="wd" id="wd" data-long="'+wl+'" data-short="'+ws+'">'+wl+'</span>'+
-    '<input class="in dsel" type="date" id="s-date" value="'+esc(S.sday)+'" max="'+todayStr+'" aria-label="Date">'+
+  return '<div class="hrow"><span></span><div class="hmid"><span class="wd" id="wd" data-long="'+wl+'" data-short="'+ws+'">'+wl+'</span><button class="ib sm" data-act="sprev" aria-label="Previous day">'+ic('back')+'</button>'+
+    '<span class="dbox"><span class="dtxt">'+esc(dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}))+'</span><input class="dover" type="date" id="s-date" value="'+esc(S.sday)+'" max="'+todayStr+'" aria-label="Date"></span>'+
     '<button class="ib sm" data-act="snext" aria-label="Next day"'+(at?' disabled style="visibility:hidden"':'')+'>'+ic('fwd')+'</button></div>'+cog+'</div>';
     
 }
