@@ -31,9 +31,10 @@ body{font-family:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
 input,select{font:inherit;color:inherit}
 .hd{display:flex;align-items:center;gap:6px;min-height:56px}
-.hrow{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;min-height:52px;margin-bottom:10px}
+.hrow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:52px;margin-bottom:10px}
 .hmid{display:flex;align-items:center;justify-content:center;gap:2px;min-width:0;overflow:hidden}
-.hmid .wd{font-size:15px;font-weight:500;color:var(--mute);margin:0 4px 0 2px;white-space:nowrap}
+.hrow .wd{font-size:15px;font-weight:500;color:var(--mute);white-space:nowrap;justify-self:start}
+.hrow>.ib{justify-self:end}
 .hd h1,.hrow h1{flex:1;margin:0;font-size:19px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ib{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;flex:none}
 .hrow .ib.sm{width:36px;height:44px}
@@ -391,8 +392,8 @@ function homeRow(){
   const cog='<button class="ib" data-act="goals" aria-label="Settings">'+ic('cog')+'</button>';
   if(S.scope==='week')return '<div class="hrow"><span></span><h1>Last 7 days</h1>'+cog+'</div>';
   const at=S.sday>=todayStr;
-  const dt=new Date(S.sday+'T12:00:00'),wl=dt.toLocaleDateString('en-AU',{weekday:'long'}),ws=dt.toLocaleDateString('en-AU',{weekday:'short'});
-  return '<div class="hrow"><span></span><div class="hmid"><span class="wd" id="wd" data-long="'+wl+'" data-short="'+ws+'">'+wl+'</span><button class="ib sm" data-act="sprev" aria-label="Previous day">'+ic('back')+'</button>'+
+  const dt=new Date(S.sday+'T12:00:00'),ws=dt.toLocaleDateString('en-AU',{weekday:'long'}).slice(0,3);
+  return '<div class="hrow"><span class="wd" id="wd">'+ws+'</span><div class="hmid"><button class="ib sm" data-act="sprev" aria-label="Previous day">'+ic('back')+'</button>'+
     '<span class="dbox"><span class="dtxt">'+esc(dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}))+'</span><input class="dover" type="date" id="s-date" value="'+esc(S.sday)+'" max="'+todayStr+'" aria-label="Date"></span>'+
     '<button class="ib sm" data-act="snext" aria-label="Next day"'+(at?' disabled style="visibility:hidden"':'')+'>'+ic('fwd')+'</button></div>'+cog+'</div>';
     
@@ -531,15 +532,8 @@ function render(keep){
   if(cur.view==='search'||cur.view==='isearch'||cur.view==='rsearch')updateList();
   if(cur.view==='detail'){const q=document.getElementById('qty');if(q&&!keep){q.focus();q.select()}}
   if(cur.view==='rsearch'){const q=document.getElementById('q');if(q&&!keep)q.focus()}
-  if(cur.view==='home')fitDay();
   setHints();
   window.scrollTo(0,keep?y:0);
-}
-function fitDay(){
-  const wd=document.getElementById('wd'),mid=document.querySelector('.hmid');
-  if(!wd||!mid)return;
-  wd.textContent=wd.dataset.long;
-  if(mid.scrollWidth>mid.clientWidth+1)wd.textContent=wd.dataset.short;
 }
 const CHAIN={edit:1,recipe:1,entry:1,goals:1};
 function chainEls(){return Array.from(app.querySelectorAll('input:not([type=file]),select'))}
